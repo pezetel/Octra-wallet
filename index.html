@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octra Wallet Generator — UI Preview</title>
+    <style>
+        :root {
+            --blue-50-base: #0000db;
+            --blue-40: #043aff;
+            --gray-0: #ffffff;
+            --gray-10: #f1f1f1;
+            --gray-40: #9b9b9b;
+            --gray-60: #313131;
+            --gray-80: #181818;
+            --background-default-color: #181818;
+            --text-inverted-color: #ffffff;
+            --text-main: #222222;
+            --button-primary-text: #ffffff;
+            --border-color: #9b9b9b;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Tahoma, Arial, sans-serif;
+            font-size: 18px;
+            line-height: 26px;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-default-color);
+            color: var(--text-inverted-color);
+        }
+        .container { max-width: 1024px; width: 100%; padding: 20px; box-sizing: border-box; }
+        h1 {
+            text-align: center;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 62px;
+            line-height: 64px;
+            font-weight: 900;
+            margin-bottom: 40px;
+            letter-spacing: -0.02em;
+        }
+        h3 {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 36px;
+            line-height: 42px;
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+        .button {
+            outline: 1px solid var(--blue-50-base);
+            background: var(--blue-50-base);
+            color: var(--button-primary-text);
+            border: none;
+            padding: 8px 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 0;
+            min-height: 42px;
+            transition: background-color 0.2s;
+        }
+        .button:hover { background: var(--blue-40); outline-color: var(--blue-40); }
+        .button.size-large { padding: 10px 16px; font-size: 20px; min-height: 50px; }
+        .button.fullwidth { width: 100%; }
+        .derive-button { padding: 6px 12px; font-size: 16px; min-height: 36px; margin-left: 4px; }
+        .status {
+            margin: 40px 0 16px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            min-height: 104px;
+            white-space: pre-wrap;
+            font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 18px;
+        }
+        .wallet-info { padding: 20px 0; margin-top: 20px; }
+        .wallet-field { margin: 20px 0; display: flex; flex-direction: row; gap: 24px; }
+        .field-label { font-size: 16px; line-height: 20px; flex-basis: 200px; flex-shrink: 0; }
+        .field-value {
+            font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 18px;
+            word-break: break-all;
+            width: 100%;
+        }
+        .warning {
+            background-color: var(--gray-60);
+            color: var(--text-inverted-color);
+            padding: 12px 16px 12px 36px;
+            margin: 20px 0;
+            position: relative;
+            font-size: 16px;
+            line-height: 20px;
+        }
+        .warning::before { content: '⚠'; position: absolute; left: 12px; top: 10px; font-size: 18px; }
+        select, input[type="number"] {
+            background: var(--background-default-color);
+            color: var(--text-inverted-color);
+            border: 1px solid var(--gray-40);
+            padding: 8px 12px;
+            border-radius: 0;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        #derivedAddress {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: var(--gray-60);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .preview-banner {
+            background: var(--blue-50-base);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-banner">UI PREVIEW — mock data, no real keys generated</div>
+    <div class="container">
+        <h1>octra wallet generation</h1>
+        <div class="main">
+            <div>
+                <div class="status">Ready to generate wallet...
+Starting wallet generation...
+Generating 128-bit entropy...
+Computing BIP39 mnemonic...
+Deriving master seed (HMAC-SHA512)...
+Generating Ed25519 keypair...
+Computing octra address...
+Running signature self-test... VALID
+Wallet saved to: octra-wallet-1730000000.json</div>
+                <div style="text-align: center;">
+                    <button class="button size-large fullwidth">generate new wallet</button>
+                </div>
+            </div>
+            <div class="wallet-info">
+                <h3>your wallet</h3>
+                <div class="warning">
+                    do not store this file online or on cloud services, keep your private key secure and never share it!
+                </div>
+                <div class="wallet-field">
+                    <div class="field-label">mnemonic (12 words)</div>
+                    <div class="field-value">witch collapse practice feed shame open despair creek road again ice least</div>
+                </div>
+                <div class="wallet-field">
+                    <div class="field-label">private key</div>
+                    <div class="field-value">
+                        Raw: 4f3a8e2b1c9d7f6e5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f<br>
+                        B64: TzqOKxydf25aSzwtHg+ai3xtXk86KxwNno96a1xNPi8=
+                    </div>
+                </div>
+                <div class="wallet-field">
+                    <div class="field-label">public key</div>
+                    <div class="field-value">
+                        Raw: 9b8a7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b<br>
+                        B64: m4p8bV5PMisclo+H+mtcTT4vGguci35vWks8LR4PmosQ
+                    </div>
+                </div>
+                <div class="wallet-field">
+                    <div class="field-label">octra address</div>
+                    <div class="field-value">octraXyZAbC7d8e9f0a1B2c3D4e5F6a7B8c9D0e1F2a3B4c5D6e</div>
+                </div>
+                <div class="wallet-field">
+                    <div class="field-label">technical information</div>
+                    <div class="field-value">
+                        Entropy: 8c1b3a4d5e6f7081a2b3c4d5e6f70812<br>
+                        Seed: 7f3e1a2b4c6d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f...<br>
+                        Master Chain: 4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b
+                    </div>
+                </div>
+                <div class="wallet-field">
+                    <div class="field-label">signature test</div>
+                    <div class="field-value">
+                        Message: octra-wallet-self-test<br>
+                        Signature: 3045022100e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d502201d2e3f4a5b6c7d8e9f0a1b<br>
+                        Validation: VALID
+                    </div>
+                </div>
+                <div class="wallet-field">
+                    <div class="field-label">HD derivation</div>
+                    <div class="field-value">
+                        <label>Network Type:
+                            <select>
+                                <option>MainCoin</option>
+                                <option>SubCoin</option>
+                                <option>Contract</option>
+                                <option>Subnet</option>
+                                <option>Account</option>
+                            </select>
+                        </label>
+                        <label style="margin-left: 10px;">Index:
+                            <input type="number" value="0" min="0" max="100" style="width: 60px;">
+                        </label>
+                        <button class="button derive-button">derive</button>
+                        <div id="derivedAddress">
+                            Derived Address: octraDeRiVe123456789aBcDeF0123456789aBcDeF<br>
+                            Path: m/345'/0'/0'
+                        </div>
+                    </div>
+                </div>
+                <div class="wallet-field">
+                    <div class="field-label">file saved</div>
+                    <div class="field-value">
+                        Filename: octra-wallet-1730000000.json<br>
+                        Location: In the same directory as this script
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
