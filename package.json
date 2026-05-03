@@ -10,8 +10,9 @@
     "build": "bun build --compile --outfile=wallet-generator ./src/server.ts"
   },
   "dependencies": {
-    "tweetnacl": "^1.0.3",
-    "bip39": "^3.1.0"
+    "bip39": "^3.1.0",
+    "buffer": "^6.0.3",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@types/bun": "^1.2.16",

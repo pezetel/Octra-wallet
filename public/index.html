@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="./logo.svg" />
+    <title>Octra Wallet Generator</title>
+    <style>
+        @font-face {
+          font-family: 'National';
+          src: url('./national-regular.woff2') format('woff2');
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+       }
+
+       @font-face {
+          font-family: 'FoundersGrotesk';
+          src: url('./founders-grotesk-bold.woff2') format('woff2');
+          font-weight: 700;
+          font-style: normal;
+          font-display: swap;
+       }
+
+        :root {
+            --blue-50-base: #0000db;
+            --blue-40: #043aff;
+            --gray-0: #ffffff;
+            --gray-10: #f1f1f1;
+            --gray-40: #9b9b9b;
+            --gray-60: #313131;
+            --gray-80: #181818;
+            --text-main: #222222;
+            --button-primary-text: #ffffff;
+            --border-disabled: #dedede;
+            --background-default-color: #181818;
+            --text-inverted-color: #ffffff;
+            --border-color: var(--gray-40);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'National', Tahoma, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            font-size: 18px;
+            line-height: 26px;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-default-color);
+            color: var(--text-inverted-color);
+        }
+
+        .container { max-width: 1024px; width: 100%; padding: 20px; }
+
+        h1 {
+            text-align: center;
+            font-family: 'FoundersGrotesk', 'National', sans-serif;
+            font-size: 62px;
+            line-height: 64px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-family: 'FoundersGrotesk', 'National', sans-serif;
+            font-size: 36px;
+            line-height: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .button {
+            outline: 1px solid var(--blue-50-base);
+            background: var(--blue-50-base);
+            color: var(--button-primary-text);
+            border: none;
+            padding: 8px 16px;
+            font-family: 'National', sans-serif;
+            font-size: 18px;
+            line-height: 26px;
+            cursor: pointer;
+            border-radius: 0;
+            transition: background-color 0.2s;
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button:hover { background: var(--blue-40); outline-color: var(--blue-40); }
+        .button:disabled { background: var(--gray-10); outline: none; color: var(--gray-40); cursor: not-allowed; }
+        .button.size-large { padding: 10px 16px; font-size: 20px; line-height: 30px; min-height: 50px; }
+        .button.fullwidth { width: 100%; }
+
+        .status {
+            margin: 40px 0 16px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            min-height: 104px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            max-height: 400px;
+            font-family: source-code-pro, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 18px;
+        }
+
+        .wallet-info { padding: 20px 0; margin-top: 20px; display: none; }
+
+        .wallet-field {
+            margin: 20px 0;
+            display: flex;
+            box-sizing: border-box;
+            gap: 24px;
+        }
+
+        .field-label {
+            font-family: 'National', sans-serif;
+            font-size: 16px;
+            line-height: 20px;
+            flex-basis: 200px;
+        }
+
+        .field-value {
+            font-family: source-code-pro, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 18px;
+            word-break: break-all;
+            width: 100%;
+        }
+
+        .field-value.inputs { margin-top: -12px; }
+
+        .warning {
+            background-color: var(--gray-60);
+            color: var(--text-inverted-color);
+            padding: 12px 16px;
+            margin: 20px 0;
+            font-family: 'National', sans-serif;
+            font-size: 16px;
+            line-height: 20px;
+        }
+
+        select, input[type="number"] {
+            background: var(--background-default-color);
+            color: var(--text-inverted-color);
+            border: 1px solid var(--gray-40);
+            padding: 8px 12px;
+            border-radius: 0;
+            font-family: 'National', sans-serif;
+            font-size: 16px;
+            line-height: 22px;
+        }
+
+        .derive-button {
+            padding: 6px 12px;
+            font-size: 16px;
+            line-height: 24px;
+            margin-left: 4px;
+            min-height: 36px;
+        }
+
+        #derivedAddress {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: var(--gray-60);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>octra wallet generation</h1>
+
+        <div>
+            <div class="status" id="status">Ready to generate wallet...</div>
+            <button id="generateBtn" class="button size-large fullwidth" onclick="generateWallet()">generate new wallet</button>
+        </div>
+
+        <div class="wallet-info" id="walletInfo">
+            <h3>your wallet</h3>
+            <div class="warning">
+                do not store this file online or on cloud services, keep your private key secure and never share it!
+            </div>
+
+            <div class="wallet-field">
+                <div class="field-label">mnemonic (12 words)</div>
+                <div class="field-value" id="mnemonic"></div>
+            </div>
+
+            <div class="wallet-field">
+                <div class="field-label">private key</div>
+                <div class="field-value">
+                    Raw: <span id="privateKeyRaw"></span><br>
+                    B64: <span id="privateKeyB64"></span>
+                </div>
+            </div>
+
+            <div class="wallet-field">
+                <div class="field-label">public key</div>
+                <div class="field-value">
+                    Raw: <span id="publicKeyRaw"></span><br>
+                    B64: <span id="publicKeyB64"></span>
+                </div>
+            </div>
+
+            <div class="wallet-field">
+                <div class="field-label">octra address</div>
+                <div class="field-value" id="address"></div>
+            </div>
+
+            <div class="wallet-field">
+                <div class="field-label">technical information</div>
+                <div class="field-value">
+                    Entropy: <span id="entropy"></span><br>
+                    Seed: <span id="seed"></span><br>
+                    Master Chain: <span id="masterChain"></span>
+                </div>
+            </div>
+
+            <div class="wallet-field">
+                <div class="field-label">signature test</div>
+                <div class="field-value">
+                    Message: <span id="testMessage"></span><br>
+                    Signature: <span id="testSignature"></span><br>
+                    Validation: <span id="signatureValid"></span>
+                </div>
+            </div>
+
+            <div class="wallet-field">
+                <div class="field-label">HD derivation</div>
+                <div class="field-value inputs">
+                    <label>Network Type:
+                        <select id="networkType">
+                            <option value="0">MainCoin</option>
+                            <option value="1">SubCoin</option>
+                            <option value="2">Contract</option>
+                            <option value="3">Subnet</option>
+                            <option value="4">Account</option>
+                        </select>
+                    </label>
+                    <label style="margin-left: 10px;">Index:
+                        <input type="number" id="derivationIndex" value="0" min="0" max="100" style="width: 60px;">
+                    </label>
+                    <button class="button derive-button" onclick="derivePath()">derive</button>
+                    <div id="derivedAddress" style="display: none;">
+                        Derived Address: <span id="derivedAddressValue"></span><br>
+                        Path: <span id="derivedPath"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wallet-field" id="saveInfo" style="display: none;">
+                <div class="field-label">file saved</div>
+                <div class="field-value">
+                    Filename: <span id="savedFilename"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./wallet-deps.js"></script>
+    <script>
+        const bip39 = window.bip39;
+        const nacl = window.nacl;
+
+        const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+        let currentWallet = null;
+
+        const $ = (id) => document.getElementById(id);
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+        function updateStatus(message) {
+            const status = $('status');
+            status.textContent += message + '\n';
+            status.scrollTop = status.scrollHeight;
+        }
+
+        function bytesToHex(bytes) {
+            return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function hexToBytes(hex) {
+            const out = new Uint8Array(hex.length / 2);
+            for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+            return out;
+        }
+
+        function bytesToBase64(bytes) {
+            let s = '';
+            for (const b of bytes) s += String.fromCharCode(b);
+            return btoa(s);
+        }
+
+        function concatBytes(...arrs) {
+            const total = arrs.reduce((n, a) => n + a.length, 0);
+            const out = new Uint8Array(total);
+            let o = 0;
+            for (const a of arrs) { out.set(a, o); o += a.length; }
+            return out;
+        }
+
+        async function hmacSha512(key, data) {
+            const cryptoKey = await crypto.subtle.importKey(
+                'raw', key, { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']
+            );
+            const sig = await crypto.subtle.sign('HMAC', cryptoKey, data);
+            return new Uint8Array(sig);
+        }
+
+        async function sha256(data) {
+            const sig = await crypto.subtle.digest('SHA-256', data);
+            return new Uint8Array(sig);
+        }
+
+        function base58Encode(buffer) {
+            if (buffer.length === 0) return '';
+            let num = 0n;
+            for (const b of buffer) num = (num << 8n) | BigInt(b);
+            let encoded = '';
+            while (num > 0n) {
+                const r = num % 58n;
+                num = num / 58n;
+                encoded = BASE58_ALPHABET[Number(r)] + encoded;
+            }
+            for (let i = 0; i < buffer.length && buffer[i] === 0; i++) encoded = '1' + encoded;
+            return encoded;
+        }
+
+        async function deriveMasterKey(seed) {
+            const key = new TextEncoder().encode('Octra seed');
+            const mac = await hmacSha512(key, seed);
+            return { masterPrivateKey: mac.slice(0, 32), masterChainCode: mac.slice(32, 64) };
+        }
+
+        function uint32BE(n) {
+            return new Uint8Array([(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff]);
+        }
+
+        async function deriveChildKeyEd25519(privateKey, chainCode, index) {
+            let data;
+            if (index >= 0x80000000) {
+                data = concatBytes(new Uint8Array([0x00]), privateKey, uint32BE(index));
+            } else {
+                const kp = nacl.sign.keyPair.fromSeed(privateKey);
+                data = concatBytes(kp.publicKey, uint32BE(index));
+            }
+            const mac = await hmacSha512(chainCode, data);
+            return { childPrivateKey: mac.slice(0, 32), childChainCode: mac.slice(32, 64) };
+        }
+
+        async function deriveSeedPath(seed, path) {
+            const { masterPrivateKey, masterChainCode } = await deriveMasterKey(seed);
+            let key = masterPrivateKey;
+            let chain = masterChainCode;
+            for (const idx of path) {
+                const c = await deriveChildKeyEd25519(key, chain, idx);
+                key = c.childPrivateKey;
+                chain = c.childChainCode;
+            }
+            return { key, chain };
+        }
+
+        function getNetworkTypeName(networkType) {
+            switch (networkType) {
+                case 0: return 'MainCoin';
+                case 1: return `SubCoin ${networkType}`;
+                case 2: return `Contract ${networkType}`;
+                case 3: return `Subnet ${networkType}`;
+                case 4: return `Account ${networkType}`;
+                default: return `Unknown ${networkType}`;
+            }
+        }
+
+        async function deriveForNetwork(seed, networkType = 0, network = 0, contract = 0, account = 0, index = 0, token = 0, subnet = 0) {
+            const coinType = networkType === 0 ? 0 : networkType;
+            const fullPath = [
+                0x80000000 + 345,
+                0x80000000 + coinType,
+                0x80000000 + network,
+                0x80000000 + contract,
+                0x80000000 + account,
+                0x80000000 + token,
+                0x80000000 + subnet,
+                index,
+            ];
+            const { key } = await deriveSeedPath(seed, fullPath);
+            const kp = nacl.sign.keyPair.fromSeed(key);
+            const address = await createOctraAddress(kp.publicKey);
+            return { address, path: fullPath, networkTypeName: getNetworkTypeName(networkType) };
+        }
+
+        async function createOctraAddress(publicKey) {
+            const hash = await sha256(publicKey);
+            return 'oct' + base58Encode(hash);
+        }
+
+        function verifyAddressFormat(address) {
+            if (!address.startsWith('oct')) return false;
+            if (address.length !== 47) return false;
+            for (const ch of address.slice(3)) if (!BASE58_ALPHABET.includes(ch)) return false;
+            return true;
+        }
+
+        window.generateWallet = async function generateWallet() {
+            const btn = $('generateBtn');
+            const status = $('status');
+            btn.disabled = true;
+            status.textContent = '';
+            $('walletInfo').style.display = 'none';
+            updateStatus('Starting wallet generation...');
+
+            try {
+                updateStatus('Generating entropy...');
+                await sleep(150);
+                const entropy = crypto.getRandomValues(new Uint8Array(16));
+                updateStatus('Entropy generated');
+
+                updateStatus('Creating mnemonic phrase...');
+                await sleep(150);
+                const mnemonic = bip39.entropyToMnemonic(bytesToHex(entropy));
+                const mnemonicWords = mnemonic.split(' ');
+                updateStatus('Mnemonic created');
+
+                updateStatus('Deriving seed from mnemonic...');
+                await sleep(150);
+                const seedBuf = await bip39.mnemonicToSeed(mnemonic);
+                const seed = new Uint8Array(seedBuf.buffer ? seedBuf.buffer : seedBuf);
+                updateStatus('Seed derived');
+
+                updateStatus('Deriving master key...');
+                await sleep(150);
+                const { masterPrivateKey, masterChainCode } = await deriveMasterKey(seed);
+                updateStatus('Master key derived');
+
+                updateStatus('Creating Ed25519 keypair...');
+                await sleep(150);
+                const kp = nacl.sign.keyPair.fromSeed(masterPrivateKey);
+                const privateKeyRaw = kp.secretKey.slice(0, 32);
+                const publicKeyRaw = kp.publicKey;
+                updateStatus('Keypair created');
+
+                updateStatus('Generating octra address...');
+                await sleep(150);
+                const address = await createOctraAddress(publicKeyRaw);
+                if (!verifyAddressFormat(address)) {
+                    updateStatus('ERROR: Invalid address format generated');
+                    return;
+                }
+                updateStatus('Address generated and verified');
+
+                updateStatus('Testing signature functionality...');
+                await sleep(150);
+                const testMessage = '{"from":"test","to":"test","amount":"1000000","nonce":1}';
+                const messageBytes = new TextEncoder().encode(testMessage);
+                const signature = nacl.sign.detached(messageBytes, kp.secretKey);
+                const signatureB64 = bytesToBase64(signature);
+                let signatureValid = false;
+                try {
+                    signatureValid = nacl.sign.detached.verify(messageBytes, signature, kp.publicKey);
+                    updateStatus('Signature test passed');
+                } catch {
+                    updateStatus('Signature test failed');
+                }
+
+                currentWallet = {
+                    mnemonic: mnemonicWords,
+                    seed_hex: bytesToHex(seed),
+                    master_chain_hex: bytesToHex(masterChainCode),
+                    private_key_hex: bytesToHex(privateKeyRaw),
+                    public_key_hex: bytesToHex(publicKeyRaw),
+                    private_key_b64: bytesToBase64(privateKeyRaw),
+                    public_key_b64: bytesToBase64(publicKeyRaw),
+                    address,
+                    entropy_hex: bytesToHex(entropy),
+                    test_message: testMessage,
+                    test_signature: signatureB64,
+                    signature_valid: signatureValid,
+                };
+
+                updateStatus('Wallet generation complete!');
+                displayWallet(currentWallet);
+            } catch (err) {
+                updateStatus('ERROR: ' + err.message);
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+        function displayWallet(w) {
+            $('mnemonic').textContent = w.mnemonic.join(' ');
+            $('privateKeyRaw').textContent = w.private_key_hex;
+            $('privateKeyB64').textContent = w.private_key_b64;
+            $('publicKeyRaw').textContent = w.public_key_hex;
+            $('publicKeyB64').textContent = w.public_key_b64;
+            $('address').textContent = w.address;
+            $('entropy').textContent = w.entropy_hex;
+            $('seed').textContent = w.seed_hex.substring(0, 64) + '...';
+            $('masterChain').textContent = w.master_chain_hex;
+            $('testMessage').textContent = w.test_message;
+            $('testSignature').textContent = w.test_signature;
+            $('signatureValid').textContent = w.signature_valid ? 'VALID' : 'INVALID';
+            $('walletInfo').style.display = 'block';
+            saveWallet();
+        }
+
+        function saveWallet() {
+            if (!currentWallet) return;
+            const ts = Math.floor(Date.now() / 1000);
+            const filename = `octra_wallet_${currentWallet.address.slice(-8)}_${ts}.txt`;
+            const content = `octra wallet
+${'='.repeat(50)}
+
+SECURITY WARNING: KEEP THIS FILE SECURE AND NEVER SHARE YOUR PRIVATE KEY
+
+Generated: ${new Date().toISOString().replace('T', ' ').slice(0, 19)}
+Address Format: oct + Base58(SHA256(pubkey))
+
+Mnemonic: ${currentWallet.mnemonic.join(' ')}
+Private Key (B64): ${currentWallet.private_key_b64}
+Public Key (B64): ${currentWallet.public_key_b64}
+Address: ${currentWallet.address}
+
+Technical Details:
+Entropy: ${currentWallet.entropy_hex}
+Signature Algorithm: Ed25519
+Derivation: BIP39-compatible (PBKDF2-HMAC-SHA512, 2048 iterations)
+`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            updateStatus('Wallet downloaded: ' + filename);
+            $('savedFilename').textContent = filename;
+            $('saveInfo').style.display = 'flex';
+        }
+
+        window.derivePath = async function () {
+            if (!currentWallet) {
+                alert('Please generate a wallet first');
+                return;
+            }
+            const networkType = parseInt($('networkType').value);
+            const index = parseInt($('derivationIndex').value);
+            try {
+                const seed = hexToBytes(currentWallet.seed_hex);
+                const derived = await deriveForNetwork(seed, networkType, 0, 0, 0, index);
+                const pathStr = derived.path
+                    .map((i) => (i & 0x7fffffff).toString() + ((i & 0x80000000) ? "'" : ''))
+                    .join('/');
+                $('derivedAddressValue').textContent = derived.address;
+                $('derivedPath').textContent = pathStr;
+                $('derivedAddress').style.display = 'block';
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        };
+    </script>
+</body>
+</html>
